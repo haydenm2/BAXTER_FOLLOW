@@ -15,7 +15,7 @@ import tf
 
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
-from std_msgs.msg import Int8MultiArray
+#import CamArray
 #import baxter_interface
 import cv2
 import cv_bridge
@@ -53,10 +53,10 @@ def main():
 #    callback = self.right_camera_callback
     camera_str = "/cameras/right_hand_camera/image"
 #    camera_sub = rospy.Subscriber(camera_str, Image, callback)	#init subscriber
-    cam_pub = rospy.Publisher('sticky', Int8MultiArray, queue_size=1)
+#    cam_pub = rospy.Publisher('cam_data', array, queue_size=1)
 
     while not rospy.is_shutdown():
-        img = cv2.imread("/home/haydenm2/dev_ws/src/baxter_follow/other/sticky.png")  #load sample image for debugging
+        img = cv2.imread("/home/haydenm2/dev_ws/src/baxter_follow/other/yellow.png")  #load sample image for debugging
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  #convert RGB to HSV image
 
         lower_yel = np.array([25,100,150]) #yellow lower bound definition
@@ -99,7 +99,10 @@ def main():
            # display the image
            cv2.imshow("Image", img)
            cv2.waitKey(0)
-           arr = [sticky,offx,offy]
+#           arr = array()
+#           arr.sticky(sticky)
+#           arr.xoffset(xoffset)
+#           arr.yoffset(yoffset)
 #        cv2.imshow('frame',img)  #show original image
 #        cv2.imshow('mask',mask)  #show mask to be applied
 #        cv2.imshow('res',res)    #show resulting image
@@ -107,8 +110,7 @@ def main():
 #        cv2.destroyAllWindows()  #kill all open image windows
 
         #rospy.loginfo(str)
-        cam_pub.publish(arr)
-#        count = count + 1
+#        cam_pub.publish(arr)
         rate = rospy.Rate(10) # 10hz
         rate.sleep()
 	#cam = baxter_interface.camera.CameraController("right_hand_camera")
