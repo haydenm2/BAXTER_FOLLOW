@@ -53,7 +53,7 @@ def main():
 #    callback = self.right_camera_callback
     camera_str = "/cameras/right_hand_camera/image"
 #    camera_sub = rospy.Subscriber(camera_str, Image, callback)	#init subscriber
-    cam_pub = rospy.Publisher('cam_data', array, queue_size=1)
+    cam_pub = rospy.Publisher('cam_data', CamArray, queue_size=1)
 
     while not rospy.is_shutdown():
         img = cv2.imread("/home/haydenm2/dev_ws/src/baxter_follow/other/yellow.png")  #load sample image for debugging
@@ -92,17 +92,19 @@ def main():
            cY = int(M["m01"] / M["m00"])
            cv2.circle(img, (cX, cY), 5, (0, 0, 255), -1)
            height, width = img.shape[:2]
-           offx = width/2-cX
-           offy = height/2-cY
+           offx = int(width/2-cX)
+           offy = int(height/2-cY)
            rospy.loginfo("x= %s y= %s width= %s height= %s", cX, cY, width, height)
-           rospy.loginfo("x-offset= %s  yoffset= %s", offx, offy)
+           rospy.loginfo("x-offset= %s  y-offset= %s", offx, offy)
            # display the image
-           cv2.imshow("Image", img)
-           cv2.waitKey(0)
-           arr = array()
-           arr.sticky(sticky)
-           arr.xoffset(xoffset)
-           arr.yoffset(yoffset)
+#           cv2.imshow("Image", img)
+#           cv2.waitKey(0)
+           arr = CamArray()
+           arr.visible = sticky
+           arr.xoffset = offx
+           arr.yoffset = offy
+           arr.img_width = width
+           arr.img_height = height
 #        cv2.imshow('frame',img)  #show original image
 #        cv2.imshow('mask',mask)  #show mask to be applied
 #        cv2.imshow('res',res)    #show resulting image

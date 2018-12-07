@@ -1,5 +1,5 @@
-int8 sticky
-int8 xoffset
-int8 yoffset
-int8 img_width
-int8 img_height
+int16 visible
+int16 xoffset
+int16 yoffset
+int16 img_width
+int16 img_height
