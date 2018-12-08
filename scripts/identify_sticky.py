@@ -31,19 +31,13 @@ import cv_bridge
 	#convert HSV image to binary using OpenCV inRange() function
 	#publish msg to topic sticky_sight topic if threshold exists
 
-# right camera call back function
-#def right_camera_callback(self, data):
-#    self.camera_callback(data, "Right Hand Camera")
+img = "global"
 
-def camera_callback(self, data, camera_name):
+def camera_callback(message):
+    global img
     # Convert image from a ROS image message to a CV image
-    try:
-        self.cv_image = cv_bridge.CvBridge().imgmsg_to_cv(data, "bgr8")
-    except cv_bridge.CvBridgeError, e:
-        print e
-
-    # 3ms wait
-    cv.WaitKey(3)
+    bridge = CvBridge()
+    img = bridge.imgmsg_to_cv2(message, "bgr8")
 
 def main():
     rospy.init_node('identify_sticky') 	#start identify_sticky node
@@ -52,11 +46,12 @@ def main():
     # create subscriber to the required camera
 #    callback = self.right_camera_callback
     camera_str = "/cameras/right_hand_camera/image"
-#    camera_sub = rospy.Subscriber(camera_str, Image, callback)	#init subscriber
+#    rospy.Subscriber(camera_str, Image, camera_callback)	#init subscriber
     cam_pub = rospy.Publisher('cam_data', CamArray, queue_size=1)
+    global img
 
     while not rospy.is_shutdown():
-        img = cv2.imread("/home/haydenm2/dev_ws/src/baxter_follow/other/yellow.png")  #load sample image for debugging
+        img = cv2.imread("/home/haydenm2/dev_ws/src/baxter_follow/other/sticky.png")  #load sample image for debugging
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  #convert RGB to HSV image
 
         lower_yel = np.array([25,100,150]) #yellow lower bound definition
@@ -68,6 +63,10 @@ def main():
         if cv2.countNonZero(mask) <= 10:
 #            print "No Sticky Note Detected"    #for debugging
             sticky = 0
+            width = img.shape[:2]
+            offx = int(cX-width/2)
+            offy = int(height/2-cY)
+
         else:
 #            print "STICKY NOTE DETECTED!"      #for debugging
             sticky = 1
@@ -101,8 +100,8 @@ def main():
 #           cv2.waitKey(0)
            arr = CamArray()
            arr.visible = sticky
-           arr.xoffset = offx
-           arr.yoffset = offy
+           arr.xoffset = float(offx)/float(width/2)
+           arr.yoffset = float(offy)/float(height/2)
            arr.img_width = width
            arr.img_height = height
 #        cv2.imshow('frame',img)  #show original image
