@@ -3,3 +3,4 @@ float32 xoffset
 float32 yoffset
 int16 img_width
 int16 img_height
+float32 distance
